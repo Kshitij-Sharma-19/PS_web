@@ -1,28 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Guess the Number</title>
-    <link rel="stylesheet" type="text/css" href="./static/style.css">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            margin: 20px auto;
+            max-width: 300px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            text-align: center;
+            border: 2px solid #333;
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        .cell:hover {
+            background-color: #f2f2f2;
+        }
+
+        #winner-message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Guess the Number Game</h1>
-    <p>Can you guess the number between 1 and 100?</p>
-    <form id="guess-form">
-        <label for="guess">Enter your guess:</label>
-        <input type="number" id="guess" min="1" max="100">
-        <button type="submit">Submit Guess</button>
-    </form>
-    <p id="result"></p>
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board">
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+    </div>
+    <p id="winner-message"></p>
+
     <script>
-        document.getElementById("guess-form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const guess = document.getElementById("guess").value;
-            fetch(`/guess?value=${guess}`)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById("result").innerText = data;
-                });
-        });
+        let currentPlayer = 'X';
+        let cells = document.querySelectorAll('.cell');
+        let winner = null;
+
+        function checkWinner() {
+            const winningCombos = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let combo of winningCombos) {
+                const [a, b, c] = combo;
+                if (cells[a].innerText && cells[a].innerText === cells[b].innerText && cells[a].innerText === cells[c].innerText) {
+                    cells[a].style.backgroundColor = 'green';
+                    cells[b].style.backgroundColor = 'green';
+                    cells[c].style.backgroundColor = 'green';
+                    winner = cells[a].innerText;
+                    document.getElementById('winner-message').innerText = `Player ${winner} wins!`;
+                }
+            }
+
+            if (!winner && [...cells].every(cell => cell.innerText)) {
+                document.getElementById('winner-message').innerText = "It's a draw!";
+            }
+        }
+
+        function makeMove(cell) {
+            if (!cell.innerText && !winner) {
+                cell.innerText = currentPlayer;
+                cell.style.backgroundColor = 'lightgray';
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                checkWinner();
+            }
+        }
     </script>
 </body>
 </html>
